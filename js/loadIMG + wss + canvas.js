@@ -7,19 +7,23 @@ let urlWithId = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   const url = new URL(window.location.href)
-  // если ссылка имеет параметр ID, делаем запрос по id на сервер, переходим в режим комментирования
 
+  // если ссылка имеет параметр ID, делаем запрос по id на сервер, переходим в режим комментирования
   if (url.searchParams.get('id')) {
     preloader.style.display = 'block';
     urlWithId = true;
-
     getImg(url.searchParams.get('id'))
+
     // если есть локал сторидж делаем запрос по по id на сервер, переходим в режим поделиться
   } else if (localStorage.getItem('URL_ID')) {
     preloader.style.display = 'block';
     getImg(localStorage.getItem('URL_ID'))
 
   }
+
+  // позиция меню
+  menu.style.left = localStorage.getItem('menuLeft')
+  menu.style.top = localStorage.getItem('menuTop')
 })
 
 newImgButton.addEventListener('click', chooseImg);
@@ -99,6 +103,7 @@ function getImg(id) {
 
 
 let connection;
+let isFirstConnection = true
 
 function dataProcessing(data) {
   // устанавливаем фон
@@ -111,6 +116,7 @@ function dataProcessing(data) {
   // формируем URL для режима поделиться
   const url = `${window.location.href}?id=${data.id}`
   menuURL.value = url;
+
   localStorage.setItem('URL_ID', data.id)
 
   currentImg.addEventListener('load', loadImg)
@@ -132,7 +138,12 @@ function dataProcessing(data) {
 
   }
 
-  connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${data.id}`);
+  // подключаем вебсокет
+  wss()
+}
+
+function wss() {
+  connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${localStorage.getItem('URL_ID')}`);
 
   connection.addEventListener('open', () => {
     console.log('open')
@@ -140,16 +151,11 @@ function dataProcessing(data) {
 
   connection.addEventListener('message', () => {
     const data = JSON.parse(event.data)
+
     console.log(data)
 
     if (data.event === 'pic') {
-      const picData = data.pic
-      if (picData.mask) {
-        canvas.style.backgroundImage = `url(${picData.mask})`
-      } else {
-        // canvas.style.backgroundImage = ``
-        // ctx.clearRect(0, 0, canvas.width, canvas.height) 
-      }
+      if (data.pic.mask) canvas.style.backgroundImage = `url(${data.pic.mask})` 
     }
 
     if (data.event === 'comment') {
@@ -177,8 +183,14 @@ function dataProcessing(data) {
     if (data.event === 'mask') {
       canvas.style.backgroundImage = `url(${data.url})`
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-    }
 
+      // для коректной работы рисования необходимо переподключение вебсокета 
+      if (isFirstConnection) {
+        connection.close(1000)
+        wss(data)
+        isFirstConnection = false
+      }
+    }
   })
 }
 

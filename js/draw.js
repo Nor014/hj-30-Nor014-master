@@ -45,11 +45,6 @@ function draw() {
     moveToX = event.offsetX;
     moveToY = event.offsetY;
 
-
-    // setTimeout(function() {
-    //   sendBlob() 
-    // }, 1000)
-
   }
 }
 
@@ -81,5 +76,4 @@ function sendBlob() {
   canvas.toBlob(function (blob) {
     connection.send(blob)
   })
-
 }

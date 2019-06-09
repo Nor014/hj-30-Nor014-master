@@ -31,12 +31,13 @@ toggleButton.addEventListener('click', () => {
 
 
 function canvasClick(event) {
-  
+
   if (commentsOn.checked) {
 
     let x = event.offsetX
     let y = event.offsetY
 
+    findEmptyForm()
     createCommentBlock(x, y)
   }
 }
@@ -92,6 +93,9 @@ function createCommentBlock(x, y, comments = []) {
   form.appendChild(span)
   form.appendChild(checkbox)
   form.appendChild(commentsBody)
+
+  // атрибут для отслеживания пустой формы
+  form.dataset.formWithComments = 'false'
 
   // Отправка сообщения
   form.addEventListener('submit', (e) => sendFormMessage(e, x, y))
@@ -183,4 +187,14 @@ function createComment({ timestamp, message }, form) {
 
   form.querySelector('.comments__body').insertBefore(comment, beforeChild)
 
+  form.dataset.formWithComments = 'true'
+
+}
+
+
+function findEmptyForm() {
+  let formWithComments = commentsContainer.querySelectorAll('[data-form-with-comments]');
+  let emptyForms = Array.from(formWithComments).filter(el => el.dataset.formWithComments === 'false');
+
+  if (emptyForms.length >= 1) emptyForms.forEach(el => el.parentNode.removeChild(el));
 }
