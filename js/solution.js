@@ -120,5 +120,3 @@ function throttle(callback) {
   }
 }
 
-
-

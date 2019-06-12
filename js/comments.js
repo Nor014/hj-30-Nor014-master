@@ -36,14 +36,15 @@ function canvasClick(event) {
 
     let x = event.offsetX
     let y = event.offsetY
+    let fromClick = true
 
     findEmptyForm()
-    createCommentBlock(x, y)
+    createCommentBlock(x, y, [], fromClick)
   }
 }
 
 
-function createCommentBlock(x, y, comments = []) {
+function createCommentBlock(x, y, comments = [], fromClick = false) {
 
   // Создаем шаблон формы
   const textarea = document.createElement('textarea')
@@ -84,12 +85,19 @@ function createCommentBlock(x, y, comments = []) {
   checkbox.setAttribute('type', 'checkbox')
   checkbox.style.zIndex = '2'
 
+  // если создаем форму кликом, открываем интерфейс
+  if (fromClick === true) {
+    document.querySelectorAll('.comments__marker-checkbox').forEach(el => {
+      if (el.checked) el.checked = false
+    })
+    checkbox.checked = true
+  }
+
   const span = document.createElement('span')
   span.classList.add('comments__marker')
 
   const form = document.createElement('form')
   form.classList.add('comments__form')
-
   form.appendChild(span)
   form.appendChild(checkbox)
   form.appendChild(commentsBody)
