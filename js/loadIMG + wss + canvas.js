@@ -11,6 +11,7 @@ if (sessionStorage.length === 0) {
 
 window.addEventListener('unload', () => {
   sessionStorage.userLoggedIn = true;
+  wss.close(1000)
 })
 
 
