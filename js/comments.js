@@ -154,7 +154,7 @@ function sendFormMessage(event, x, y) {
     url = localStorage.getItem('URL_ID')
   }
 
-  console.log(url)
+  console.log(currentUrl)
   fetch(`https://neto-api.herokuapp.com/pic/${url}/comments`, {
     method: 'POST',
     credentials: 'same-origin',

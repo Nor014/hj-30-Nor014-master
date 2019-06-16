@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (localStorage.getItem('URL_ID')) {
     preloader.style.display = 'block';
     getImg(localStorage.getItem('URL_ID'))
+    
   }
 
   // позиция меню
@@ -133,9 +134,10 @@ function dataProcessing(data) {
   const url = `${window.location.href}?id=${data.id}`
   menuURL.value = url;
 
-  // если обновляем основную вкладку, обновляем localStorage
+  // если обновляем основную вкладку, обновляем localStara
   if (!fromUrl) {
   localStorage.setItem('URL_ID', data.id)
+  currentUrl = localStorage.setItem('URL_ID', data.id)
   }
 
   currentImg.addEventListener('load', loadImg)
