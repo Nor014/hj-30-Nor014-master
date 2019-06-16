@@ -137,9 +137,10 @@ function dataProcessing(data) {
   // если обновляем основную вкладку, обновляем localStara
   if (!fromUrl) {
   localStorage.setItem('URL_ID', data.id)
-  currentUrl = localStorage.setItem('URL_ID', data.id)
+  currentUrl = localStorage.getItem('URL_ID', data.id)
+  console.log(currentUrl)
   }
-
+  
   currentImg.addEventListener('load', loadImg)
 
   // сортируем все комментарии по уникальным координатам 
