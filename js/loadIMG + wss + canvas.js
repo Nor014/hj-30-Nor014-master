@@ -14,21 +14,24 @@ window.addEventListener('unload', () => {
   wss.close(1000)
 })
 
+let fromUrl;
+let currentUrl;
 
 document.addEventListener('DOMContentLoaded', () => {
   const url = new URL(window.location.href)
 
   // если ссылка имеет параметр ID, делаем запрос по id на сервер, переходим в режим комментирования
   if (url.searchParams.get('id')) {
+    fromUrl = true;
+    currentUrl = url.searchParams.get('id');
     preloader.style.display = 'block';
     urlWithId = true;
-    getImg(url.searchParams.get('id'))
+    getImg(url.searchParams.get('id'), fromUrl)
 
     // если есть локал сторидж делаем запрос по по id на сервер, переходим в режим поделиться
   } else if (localStorage.getItem('URL_ID')) {
     preloader.style.display = 'block';
     getImg(localStorage.getItem('URL_ID'))
-
   }
 
   // позиция меню
@@ -130,10 +133,12 @@ function dataProcessing(data) {
   const url = `${window.location.href}?id=${data.id}`
   menuURL.value = url;
 
+  // если обновляем основную вкладку, обновляем localStorage
+  if (!fromUrl) {
   localStorage.setItem('URL_ID', data.id)
+  }
 
   currentImg.addEventListener('load', loadImg)
-
 
   // сортируем все комментарии по уникальным координатам 
   if (data.comments) {
@@ -157,7 +162,12 @@ function dataProcessing(data) {
 }
 
 function wss() {
-  connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${localStorage.getItem('URL_ID')}`);
+
+  if (currentUrl) {
+    connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${currentUrl}`)
+  } else {
+    connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${localStorage.getItem('URL_ID')}`);
+  }
 
   connection.addEventListener('open', () => {
     console.log('open')

@@ -23,8 +23,29 @@ const currentImg = document.querySelector('.current-image'),
   menuURL = document.querySelector('.menu__url')
 
 
-// приводим к виду по умолчанию
+// выбор активного режима
 
+let modes = [commentButton, drawButton, shareButton]
+
+commentButton.addEventListener('click', (event, modes) => chooseMode(event, modes))
+drawButton.addEventListener('click', (event, modes) => chooseMode(event, modes))
+shareButton.addEventListener('click', (event, modes) => chooseMode(event, modes))
+
+burger.addEventListener('click', () => {
+  modes.forEach(el => {
+    el.dataset.choosen = false
+  })
+})
+
+function chooseMode() {
+  modes.forEach(el => {
+    el.dataset.choosen = false
+  })
+  event.currentTarget.dataset.choosen = true
+}
+
+
+// приводим к виду по умолчанию
 currentImg.src = '';
 
 let exampleForm = app.querySelector('.comments__form')

@@ -12,8 +12,8 @@ let mousedown,
 
 
 function beginDraw() {
-  if (drawTool.style.display === 'inline-block') {
-   
+  if (drawTool.dataset.choosen === 'true') {
+
     mousedown = true;
     moveToX = event.offsetX;
     moveToY = event.offsetY;
@@ -49,7 +49,7 @@ function draw() {
 }
 
 function stopDraw() {
-  if (drawTool.style.display === 'inline-block') {
+  if (drawTool.dataset.choosen === 'true') {
     sendBlob()
     mousedown = false;
     moveToX = null;

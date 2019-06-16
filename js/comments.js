@@ -32,8 +32,9 @@ toggleButton.addEventListener('click', () => {
 
 function canvasClick(event) {
 
-  if (commentsOn.checked) {
+  if (commentsOn.checked && commentButton.dataset.choosen === 'true') {
 
+    console.log(commentButton.dataset)
     let x = event.offsetX
     let y = event.offsetY
     let fromClick = true
