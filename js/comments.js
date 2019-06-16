@@ -147,7 +147,15 @@ function sendFormMessage(event, x, y) {
 
   const body = `message=${message}&left=${x}&top=${y}`;
 
-  fetch(`https://neto-api.herokuapp.com/pic/${localStorage.getItem('URL_ID')}/comments`, {
+  let url;
+  if (currentUrl) {
+    url = currentUrl
+  } else {
+    url = localStorage.getItem('URL_ID')
+  }
+
+  console.log(url)
+  fetch(`https://neto-api.herokuapp.com/pic/${url}/comments`, {
     method: 'POST',
     credentials: 'same-origin',
     headers: {
