@@ -116,8 +116,8 @@ function moveMenu() {
     menu.style.left = x + 'px'
     menu.style.top = y + 'px'
 
-    localStorage.setItem('menuLeft', menu.style.left)
-    localStorage.setItem('menuTop', menu.style.top)
+    sessionStorage.setItem('menuLeft', menu.style.left)
+    sessionStorage.setItem('menuTop', menu.style.top)
   }
 }
 

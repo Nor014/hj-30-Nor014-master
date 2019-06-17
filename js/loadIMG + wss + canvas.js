@@ -4,17 +4,6 @@ const newImgButton = document.querySelector('.menu__item.mode.new')
 let currentImgStatus = false;
 let urlWithId = false;
 
-// проверка закрытия вкладки
-if (sessionStorage.length === 0) {
-  localStorage.clear()
-}
-
-window.addEventListener('unload', () => {
-  sessionStorage.userLoggedIn = true;
-  wss.close(1000)
-})
-
-let fromUrl;
 let currentUrl;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,22 +11,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // если ссылка имеет параметр ID, делаем запрос по id на сервер, переходим в режим комментирования
   if (url.searchParams.get('id')) {
-    fromUrl = true;
     currentUrl = url.searchParams.get('id');
     preloader.style.display = 'block';
     urlWithId = true;
-    getImg(url.searchParams.get('id'), fromUrl)
+    getImg(url.searchParams.get('id'))
 
-    // если есть локал сторидж делаем запрос по по id на сервер, переходим в режим поделиться
-  } else if (localStorage.getItem('URL_ID')) {
+    // если есть сешн сторидж делаем запрос по по id на сервер, переходим в режим поделиться
+  } else if (sessionStorage.getItem('URL_ID')) {
     preloader.style.display = 'block';
-    getImg(localStorage.getItem('URL_ID'))
-    
+    getImg(sessionStorage.getItem('URL_ID'))
+    urlWithId = false
   }
 
   // позиция меню
-  menu.style.left = localStorage.getItem('menuLeft')
-  menu.style.top = localStorage.getItem('menuTop')
+  menu.style.left = sessionStorage.getItem('menuLeft')
+  menu.style.top = sessionStorage.getItem('menuTop')
 })
 
 newImgButton.addEventListener('click', chooseImg);
@@ -134,13 +122,12 @@ function dataProcessing(data) {
   const url = `${window.location.href}?id=${data.id}`
   menuURL.value = url;
 
-  // если обновляем основную вкладку, обновляем localStara
-  if (!fromUrl) {
-  localStorage.setItem('URL_ID', data.id)
-  currentUrl = localStorage.getItem('URL_ID', data.id)
-  console.log(currentUrl)
+  // если обновляем основную вкладку, обновляем sessionStorage
+  if (!urlWithId) {
+    sessionStorage.setItem('URL_ID', data.id)
+    currentUrl = sessionStorage.getItem('URL_ID', data.id)
   }
-  
+
   currentImg.addEventListener('load', loadImg)
 
   // сортируем все комментарии по уникальным координатам 
@@ -157,7 +144,6 @@ function dataProcessing(data) {
     Object.values(forms).forEach((formComments) => {
       createCommentBlock(formComments[0].left, formComments[0].top, formComments);
     })
-
   }
 
   // подключаем вебсокет
@@ -165,12 +151,7 @@ function dataProcessing(data) {
 }
 
 function wss() {
-
-  if (currentUrl) {
-    connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${currentUrl}`)
-  } else {
-    connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${localStorage.getItem('URL_ID')}`);
-  }
+  connection = new WebSocket(`wss://neto-api.herokuapp.com/pic/${currentUrl}`)
 
   connection.addEventListener('open', () => {
     console.log('open')
